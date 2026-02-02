@@ -24,7 +24,7 @@ public class ReviewAnalyticsService
     return record;
   }
 
-  Dictionary<string, ReviewStatus> GetFinalStatusPerDocument(IEnumerable<DocumentReview> reviews)
+  public Dictionary<string, ReviewStatus> GetFinalStatusPerDocument(IEnumerable<DocumentReview> reviews)
   {
     Dictionary<string, ReviewStatus> record = new Dictionary<string, ReviewStatus>();
 
@@ -47,11 +47,24 @@ public class ReviewAnalyticsService
     return record;
   }
 
-  List<string> GetTopReviewers(IEnumerable<DocumentReview> reviews, IEnumerable<Reviewer> reviewers, int topN)
+  public List<string> GetTopReviewers(IEnumerable<DocumentReview> reviews, IEnumerable<Reviewer> reviewers, int topN)
   {
     var sortTopReviewers = GetReviewCountPerReviewer(reviews).OrderByDescending(kvp => kvp.Value);
     var getTopNReviewers = sortTopReviewers.Select(kvp => kvp.Key).ToList().Take(topN);
+    List<string> answer = [];
 
-    return getTopNReviewers.ToList();
+
+    foreach (var topRev in getTopNReviewers)
+    {
+      foreach (var rev in reviewers)
+      {
+        if (topRev == rev.Id)
+        {
+          answer.Add(rev.Name);
+        }
+      }
+    }
+
+    return answer;
   }
 }
